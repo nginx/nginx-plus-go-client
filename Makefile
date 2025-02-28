@@ -1,5 +1,5 @@
 # renovate: datasource=github-tags depName=golangci/golangci-lint
-GOLANGCI_LINT_VERSION = v1.63.4
+GOLANGCI_LINT_VERSION = v1.64.5
 
 test: unit-test test-integration test-integration-no-stream-block clean
 
