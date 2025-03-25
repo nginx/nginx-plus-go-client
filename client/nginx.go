@@ -52,6 +52,15 @@ var (
 	ErrPlusVersionNotFound = errors.New("plus version not found in the input string")
 )
 
+// StatusError is an interface that defines our API with consumers of the plus client errors.
+// The error will return a http status code and an NGINX error code.
+type StatusError interface {
+	Status() int
+	Code() string
+}
+
+var _ StatusError = (*internalError)(nil)
+
 // NginxClient lets you access NGINX Plus API.
 type NginxClient struct {
 	httpClient  *http.Client
@@ -112,8 +121,18 @@ type apiError struct {
 }
 
 type internalError struct {
-	err string
-	apiError
+	err      string
+	apiError apiError
+}
+
+// Status returns the HTTP status code of the error.
+func (internalError *internalError) Status() int {
+	return internalError.apiError.Status
+}
+
+// Status returns the NGINX error code on the response.
+func (internalError *internalError) Code() string {
+	return internalError.apiError.Code
 }
 
 // Error allows internalError to match the Error interface.
@@ -1782,7 +1801,7 @@ func (client *NginxClient) GetStreamServerZones(ctx context.Context) (*StreamSer
 	if err != nil {
 		var ie *internalError
 		if errors.As(err, &ie) {
-			if ie.Code == pathNotFoundCode {
+			if ie.Code() == pathNotFoundCode {
 				return &zones, nil
 			}
 		}
@@ -1808,7 +1827,7 @@ func (client *NginxClient) GetStreamUpstreams(ctx context.Context) (*StreamUpstr
 	if err != nil {
 		var ie *internalError
 		if errors.As(err, &ie) {
-			if ie.Code == pathNotFoundCode {
+			if ie.Code() == pathNotFoundCode {
 				return &upstreams, nil
 			}
 		}
@@ -1824,7 +1843,7 @@ func (client *NginxClient) GetStreamZoneSync(ctx context.Context) (*StreamZoneSy
 	if err != nil {
 		var ie *internalError
 		if errors.As(err, &ie) {
-			if ie.Code == pathNotFoundCode {
+			if ie.Code() == pathNotFoundCode {
 				return nil, nil
 			}
 		}
@@ -2137,7 +2156,7 @@ func (client *NginxClient) GetStreamConnectionsLimit(ctx context.Context) (*Stre
 	if err != nil {
 		var ie *internalError
 		if errors.As(err, &ie) {
-			if ie.Code == pathNotFoundCode {
+			if ie.Code() == pathNotFoundCode {
 				return &limitConns, nil
 			}
 		}
