@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -1433,6 +1434,70 @@ func TestUpdateStreamServers(t *testing.T) {
 			}
 			if len(tc.responses) != 0 {
 				t.Fatalf("did not use all expected responses, %d unused", len(tc.responses))
+			}
+		})
+	}
+}
+
+func TestInternalError(t *testing.T) {
+	t.Parallel()
+
+	// mimic a user-defined interface type
+	type TestStatusError interface {
+		Status() int
+		Code() string
+	}
+
+	//nolint // ignore golangci-lint err113 sugggestion to create package level static error
+	anotherErr := errors.New("another error")
+
+	notFoundErr := &internalError{
+		err: "not found error",
+		apiError: apiError{
+			Text:   "not found error",
+			Status: http.StatusNotFound,
+			Code:   "not found code",
+		},
+	}
+
+	testcases := map[string]struct {
+		inputErr       error
+		expectedCode   string
+		expectedStatus int
+	}{
+		"simple not found": {
+			inputErr:       notFoundErr,
+			expectedStatus: http.StatusNotFound,
+			expectedCode:   "not found code",
+		},
+		"not found joined with another error": {
+			inputErr:       errors.Join(notFoundErr, anotherErr),
+			expectedStatus: http.StatusNotFound,
+			expectedCode:   "not found code",
+		},
+		"not found wrapped with another error": {
+			inputErr:       notFoundErr.Wrap("some error"),
+			expectedStatus: http.StatusNotFound,
+			expectedCode:   "not found code",
+		},
+	}
+
+	for name, tc := range testcases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			var se TestStatusError
+			ok := errors.As(tc.inputErr, &se)
+			if !ok {
+				t.Fatalf("could not cast error %v as StatusError", tc.inputErr)
+			}
+
+			if se.Status() != tc.expectedStatus {
+				t.Fatalf("expected status %d, got status %d", tc.expectedStatus, se.Status())
+			}
+
+			if se.Code() != tc.expectedCode {
+				t.Fatalf("expected code %s, got code %s", tc.expectedCode, se.Code())
 			}
 		})
 	}
