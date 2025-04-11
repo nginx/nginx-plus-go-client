@@ -29,7 +29,7 @@ services:
       service: nginx
 
   test:
-    image: golang:1.23
+    image: golang:1.24
     volumes:
       - type: bind
         source: ./
