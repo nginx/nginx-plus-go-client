@@ -90,7 +90,7 @@ jobs:
         run: docker compose up test-no-stream --exit-code-from test-no-stream
 
       - name: Create/Update Draft
-        uses: lucacome/draft-release@5d29432a46bff6c122cd4b07a1fb94e1bb158d34 # v1.1.1
+        uses: lucacome/draft-release@f15262dc3ac8c3efbf09a8ce5406cd0fc47aabb1 # v1.2.2
         id: release-notes
         with:
           minor-label: "enhancement"
