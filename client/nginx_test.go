@@ -677,8 +677,8 @@ func TestClientWithMaxAPI(t *testing.T) {
 			t.Parallel()
 			// Test creating a new client with max API version
 			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				switch {
-				case r.RequestURI == "/":
+				switch r.RequestURI {
+				case "/":
 					_, err := w.Write([]byte(tt.apiVersions))
 					if err != nil {
 						t.Fatalf("unexpected error: %v", err)
@@ -852,8 +852,8 @@ func TestGetStats_SSL(t *testing.T) {
 func TestGetMaxAPIVersionServer(t *testing.T) {
 	t.Parallel()
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case r.RequestURI == "/":
+		switch r.RequestURI {
+		case "/":
 			_, err := w.Write([]byte(`[4, 5, 6, 7]`))
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -884,8 +884,8 @@ func TestGetMaxAPIVersionServer(t *testing.T) {
 func TestGetMaxAPIVersionClient(t *testing.T) {
 	t.Parallel()
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case r.RequestURI == "/":
+		switch r.RequestURI {
+		case "/":
 			_, err := w.Write([]byte(`[4, 5, 6, 7, 8, 9, 25]`))
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
