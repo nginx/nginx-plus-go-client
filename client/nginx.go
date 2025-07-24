@@ -227,7 +227,7 @@ type LicenseReporting struct {
 type NginxLicense struct {
 	ActiveTill uint64 `json:"active_till"`
 	Eval       bool
-	Reporting  LicenseReporting
+	Reporting  *LicenseReporting
 }
 
 // Caches is a map of cache stats by cache zone.
