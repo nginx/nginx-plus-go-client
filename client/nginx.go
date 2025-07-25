@@ -225,9 +225,9 @@ type LicenseReporting struct {
 
 // NginxLicense contains licensing information about NGINX Plus.
 type NginxLicense struct {
+	Reporting  *LicenseReporting
 	ActiveTill uint64 `json:"active_till"`
 	Eval       bool
-	Reporting  *LicenseReporting
 }
 
 // Caches is a map of cache stats by cache zone.
