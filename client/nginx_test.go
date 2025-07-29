@@ -1503,6 +1503,143 @@ func TestInternalError(t *testing.T) {
 	}
 }
 
+func TestLicenseWithReporting(t *testing.T) {
+	t.Parallel()
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.RequestURI == "/":
+			_, err := w.Write([]byte(`[1,2,3,4,5,6,7,8,9]`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		case r.RequestURI == "/9/":
+			_, err := w.Write([]byte(`["nginx","processes","connections","slabs","http","resolvers","ssl","license","workers"]`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		case strings.HasPrefix(r.RequestURI, "/9/nginx"):
+			_, err := w.Write([]byte(`{
+				"version": "1.29.0",
+				"build": "nginx-plus-r34"
+			}`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		case strings.HasPrefix(r.RequestURI, "/9/license"):
+			_, err := w.Write([]byte(`{
+				"active_till" : 428250000,
+				"eval": false,
+				"reporting": {
+				  "healthy": true,
+				  "fails": 42,
+				  "grace": 86400
+				}
+			  }`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		default:
+			_, err := w.Write([]byte(`{}`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		}
+	}))
+	defer ts.Close()
+
+	client, err := NewNginxClient(ts.URL, WithAPIVersion(9), WithCheckAPI())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if client == nil {
+		t.Fatalf("client is nil")
+	}
+
+	license, err := client.GetNginxLicense(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	testReporting := LicenseReporting{
+		Healthy: true,
+		Fails:   42,
+		Grace:   86400,
+	}
+
+	testLicense := NginxLicense{
+		ActiveTill: 428250000,
+		Eval:       false,
+		Reporting:  &testReporting,
+	}
+
+	if !reflect.DeepEqual(license, &testLicense) {
+		t.Fatalf("NGINX license: expected %v, actual %v; NGINX reporting: expected %v, actual %v", testLicense, license, testReporting, license.Reporting)
+	}
+}
+
+func TestLicenseWithoutReporting(t *testing.T) {
+	t.Parallel()
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.RequestURI == "/":
+			_, err := w.Write([]byte(`[1,2,3,4,5,6,7,8,9]`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		case r.RequestURI == "/9/":
+			_, err := w.Write([]byte(`["nginx","processes","connections","slabs","http","resolvers","ssl","license","workers"]`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		case strings.HasPrefix(r.RequestURI, "/9/nginx"):
+			_, err := w.Write([]byte(`{
+				"version": "1.29.0",
+				"build": "nginx-plus-r34"
+			}`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		case strings.HasPrefix(r.RequestURI, "/9/license"):
+			_, err := w.Write([]byte(`{
+				"active_till" : 428250000,
+				"eval": false
+			  }`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		default:
+			_, err := w.Write([]byte(`{}`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		}
+	}))
+	defer ts.Close()
+
+	client, err := NewNginxClient(ts.URL, WithAPIVersion(9), WithCheckAPI())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if client == nil {
+		t.Fatalf("client is nil")
+	}
+
+	license, err := client.GetNginxLicense(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	testLicense := NginxLicense{
+		ActiveTill: 428250000,
+		Eval:       false,
+		Reporting:  nil,
+	}
+
+	if !reflect.DeepEqual(license, &testLicense) {
+		t.Fatalf("NGINX license: expected %v, actual %v", testLicense, license)
+	}
+}
+
 type response struct {
 	servers    interface{}
 	statusCode int
