@@ -1,4 +1,4 @@
-module github.com/nginx/nginx-plus-go-client/v2
+module github.com/nginx/nginx-plus-go-client/v3
 
 go 1.24.2
 
