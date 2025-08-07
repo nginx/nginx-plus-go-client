@@ -850,7 +850,8 @@ func TestStreamStats(t *testing.T) {
 	}
 
 	// make connection so we have stream server zone stats - ignore response
-	_, err = net.Dial("tcp", helpers.GetStreamAddress())
+	d := &net.Dialer{}
+	_, err = d.DialContext(context.Background(), "tcp", helpers.GetStreamAddress())
 	if err != nil {
 		t.Errorf("Error making tcp connection: %v", err)
 	}
