@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.17
-FROM debian:12-slim
+FROM debian:13-slim
 
 LABEL maintainer="NGINX Docker Maintainers <integrations@nginx.com>"
 
