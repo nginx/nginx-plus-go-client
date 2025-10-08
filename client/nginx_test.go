@@ -821,7 +821,7 @@ func TestGetStats_Connections(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(stats.Connections, testStats) {
-		t.Fatalf("SSL stats: expected %v, actual %v", testStats, stats.Connections)
+		t.Fatalf("Connection stats: expected %v, actual %v", testStats, stats.Connections)
 	}
 }
 
