@@ -765,6 +765,66 @@ func TestGetStats_NoStreamEndpoint(t *testing.T) {
 	}
 }
 
+func TestGetStats_Connections(t *testing.T) {
+	t.Parallel()
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.RequestURI == "/":
+			_, err := w.Write([]byte(`[4, 5, 6, 7, 8, 9]`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		case r.RequestURI == "/8/":
+			_, err := w.Write([]byte(`["nginx","processes","connections","slabs","http","resolvers","ssl","workers"]`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		case strings.HasPrefix(r.RequestURI, "/8/connections"):
+			_, err := w.Write([]byte(`{
+				"active": -1,
+				"idle": 3,
+				"accepted": 5,
+				"dropped": 2
+			}`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		default:
+			_, err := w.Write([]byte(`{}`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		}
+	}))
+
+	defer ts.Close()
+
+	// Test creating a new client with a supported API version on the server
+	client, err := NewNginxClient(ts.URL, WithAPIVersion(8), WithCheckAPI())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if client == nil {
+		t.Fatalf("client is nil")
+	}
+
+	stats, err := client.GetStats(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	testStats := Connections{
+		Accepted: 5,
+		Dropped:  2,
+		Active:   -1,
+		Idle:     3,
+	}
+
+	if !reflect.DeepEqual(stats.Connections, testStats) {
+		t.Fatalf("SSL stats: expected %v, actual %v", testStats, stats.Connections)
+	}
+}
+
 func TestGetStats_SSL(t *testing.T) {
 	t.Parallel()
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

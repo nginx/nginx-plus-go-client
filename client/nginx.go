@@ -262,10 +262,10 @@ type ExtendedCacheStats struct {
 
 // Connections represents connection related stats.
 type Connections struct {
-	Accepted uint64
-	Dropped  uint64
-	Active   uint64
-	Idle     uint64
+	Accepted int64
+	Dropped  int64
+	Active   int64
+	Idle     int64
 }
 
 // Slabs is map of slab stats by zone name.
