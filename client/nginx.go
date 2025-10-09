@@ -1002,7 +1002,7 @@ func determineUpdates(updatedServers []UpstreamServer, nginxServers []UpstreamSe
 		}
 	}
 
-	return
+	return toAdd, toRemove, toUpdate
 }
 
 func (client *NginxClient) getIDOfHTTPServer(ctx context.Context, upstream string, name string) (int, error) {
