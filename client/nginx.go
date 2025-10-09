@@ -1376,7 +1376,7 @@ func determineStreamUpdates(updatedServers []StreamUpstreamServer, nginxServers 
 		}
 	}
 
-	return
+	return toAdd, toRemove, toUpdate
 }
 
 // GetStats gets process, slab, connection, request, ssl, zone, stream zone, upstream and stream upstream related stats from the NGINX Plus API.
