@@ -1002,7 +1002,7 @@ func determineUpdates(updatedServers []UpstreamServer, nginxServers []UpstreamSe
 		}
 	}
 
-	return
+	return toAdd, toRemove, toUpdate
 }
 
 func (client *NginxClient) getIDOfHTTPServer(ctx context.Context, upstream string, name string) (int, error) {
@@ -1376,7 +1376,7 @@ func determineStreamUpdates(updatedServers []StreamUpstreamServer, nginxServers 
 		}
 	}
 
-	return
+	return toAdd, toRemove, toUpdate
 }
 
 // GetStats gets process, slab, connection, request, ssl, zone, stream zone, upstream and stream upstream related stats from the NGINX Plus API.
