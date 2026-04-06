@@ -6,7 +6,6 @@ on:
     workflows:
       - "Continuous Integration"
       - "CodeQL"
-      - "Fossa"
       - "Lint"
     types:
       - completed
