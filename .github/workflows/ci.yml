@@ -72,8 +72,8 @@ jobs:
         with:
           file: docker/Dockerfile
           tags: nginx-plus
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: ${{ github.event_name != 'pull_request' && 'type=gha' || '' }}
+          cache-to: ${{ github.event_name != 'pull_request' && 'type=gha,mode=max' || '' }}
           load: true
           secrets: |
             "nginx-repo.crt=${{ secrets.NGINX_CRT }}"
