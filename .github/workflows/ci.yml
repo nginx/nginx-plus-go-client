@@ -72,7 +72,7 @@ jobs:
         with:
           file: docker/Dockerfile
           tags: nginx-plus
-          cache-from: type=gha
+          cache-from: type=gha, ignore-error=true
           cache-to: type=gha, ignore-error=true
           load: true
           secrets: |
