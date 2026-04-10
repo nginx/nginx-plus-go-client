@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Setup Golang Environment
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version-file: go.mod
 
@@ -72,8 +72,8 @@ jobs:
         with:
           file: docker/Dockerfile
           tags: nginx-plus
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: ${{ github.event_name != 'pull_request' && 'type=gha' || '' }}
+          cache-to: ${{ github.event_name != 'pull_request' && 'type=gha,mode=max' || '' }}
           load: true
           secrets: |
             "nginx-repo.crt=${{ secrets.NGINX_CRT }}"
@@ -86,7 +86,7 @@ jobs:
         run: docker compose up test-no-stream --exit-code-from test-no-stream
 
       - name: Create/Update Draft
-        uses: lucacome/draft-release@63b16bb66ce9106da096d2c903216742430e9f56 # v2.0.3
+        uses: lucacome/draft-release@0c50500964387d6c8fed46e24187929e5abc5b63 # v2.1.0
         id: release-notes
         with:
           minor-label: "enhancement"
@@ -96,7 +96,7 @@ jobs:
         if: ${{ github.event_name == 'push' }}
 
       - name: Setup Golang Environment
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version-file: go.mod
         if: ${{ github.ref_type == 'tag' }}
