@@ -29,12 +29,12 @@ repos:
       - id: golangci-lint-full
 
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.30.0
+    rev: v8.30.1
     hooks:
       - id: gitleaks
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.20.0
+    rev: v0.22.0
     hooks:
       - id: markdownlint-cli2
 
@@ -44,7 +44,7 @@ repos:
       - id: yamllint
 
   - repo: https://github.com/thlorenz/doctoc
-    rev: v2.2.0
+    rev: v2.4.0
     hooks:
       - id: doctoc
         args: [--update-only, --title, "## Table of Contents"]
