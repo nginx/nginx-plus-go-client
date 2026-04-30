@@ -104,7 +104,7 @@ jobs:
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@1a80836c5c9d9e5755a25cb59ec6f45a3b5f41a8 # v7.2.1
         with:
-          version: v2.15.2 # renovate: datasource=github-tags depName=goreleaser/goreleaser
+          version: v2.15.4 # renovate: datasource=github-tags depName=goreleaser/goreleaser
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
