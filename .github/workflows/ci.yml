@@ -68,7 +68,7 @@ jobs:
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Build Plus Docker Image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           file: docker/Dockerfile
           tags: nginx-plus
@@ -86,7 +86,7 @@ jobs:
         run: docker compose up test-no-stream --exit-code-from test-no-stream
 
       - name: Create/Update Draft
-        uses: lucacome/draft-release@79e6ec7db3f1de9d330fdc716e45841c99a78196 # v2.2.1
+        uses: lucacome/draft-release@5bc11f2401bad413a67299dcc857b50ff0d80b12 # v2.2.2
         id: release-notes
         with:
           minor-label: "enhancement"
@@ -104,7 +104,7 @@ jobs:
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:
-          version: v2.17.1 # renovate: datasource=github-tags depName=goreleaser/goreleaser
+          version: v2.18.3 # renovate: datasource=github-tags depName=goreleaser/goreleaser
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
