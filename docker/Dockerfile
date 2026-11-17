@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.28
+# syntax=docker/dockerfile:1.29
 FROM debian:12-slim
 
 LABEL maintainer="NGINX Docker Maintainers <integrations@nginx.com>"
